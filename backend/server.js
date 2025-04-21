@@ -29,10 +29,17 @@ try {
 app.use("/api/user", userRoute);
 app.use("/api/message", messageRoute);
 
+// For ES modules, properly get __dirname
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, '/frontend/dist')));
-  app.get('*', (_, res) => res.sendFile(path.resolve(__dirname, '/frontend/dist/index.html')));
+  // Remove leading slash for relative path
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
 }
 
 server.listen(PORT, () => {
